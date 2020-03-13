@@ -5,7 +5,7 @@
 [node name="Debug_World" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-position = Vector2( 279.504, 174.047 )
+position = Vector2( 280, 200 )
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
