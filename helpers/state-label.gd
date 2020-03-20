@@ -5,7 +5,8 @@ var Player = load("res://character/player/player.gd")
 var _state_text = {
 	Player.States.IDLE: "idle",
 	Player.States.WALK: "walk",
-	Player.States.RUN: "run"
+	Player.States.RUN: "run",
+	Player.States.LOOT: "loot"
 }
 
 

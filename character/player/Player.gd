@@ -6,7 +6,8 @@ const MoveStrategy = preload("res://character/player/move-strategy.gd")
 enum States {
 	IDLE,
 	WALK,
-	RUN
+	RUN,
+	LOOT
 }
 
 # Changes in the characters behavior
@@ -16,7 +17,9 @@ enum Events {
 	STOP,
 	IDLE,
 	WALK,
-	RUN
+	RUN,
+	LOOT,
+	DONE
 }
 
 const SPEED = {
@@ -27,6 +30,14 @@ const SPEED = {
 const MOVE_STRATEGY = {
 	States.WALK: MoveStrategy,
 	States.RUN: MoveStrategy
+}
+
+# Determines which states allow you to aim
+const AIM = {
+	States.IDLE: true,
+	States.WALK: true,
+	States.RUN: true,
+	States.LOOT: false
 }
 
 # Movement Variables
@@ -40,7 +51,7 @@ onready var bullet_noise = $BulletShot
 export var bullet_speed = 1000
 export var fire_rate = 0.2 # In seconds
 var bullet = preload("res://character/player/Bullet/Bullet.tscn")
-var can_fire = true
+var can_fire = true #Helps to keep shots constant and not all at once
 
 # Constuctor, to overwrite _transitions
 func _init() -> void:
@@ -48,15 +59,20 @@ func _init() -> void:
 	_transitions = {
 		[States.IDLE, Events.WALK]: States.WALK,
 		[States.IDLE, Events.RUN]: States.RUN,
+		[States.IDLE, Events.LOOT]: States.LOOT,
 		[States.WALK, Events.STOP]: States.IDLE,
 		[States.WALK, Events.RUN]: States.RUN,
+		[States.WALK, Events.LOOT]: States.LOOT,
 		[States.RUN, Events.STOP]: States.IDLE,
 		[States.RUN, Events.WALK]: States.WALK,
+		[States.RUN, Events.LOOT]: States.LOOT,
+		[States.LOOT, Events.DONE]: States.IDLE,
 	}
 
 func _process(delta):
-	# Player look at mous position
-	look_at(get_global_mouse_position())
+	# Player look at mouse position
+	if AIM[state]:
+		look_at(get_global_mouse_position())
 
 func _physics_process(delta):
 	# Get the players input
@@ -74,7 +90,9 @@ func _physics_process(delta):
 static func get_raw_input(state):
 	return {
 		direction = utils.get_input_direction(),
-		is_running = Input.is_action_pressed("run")
+		is_running = Input.is_action_pressed("run"),
+		is_looting = Input.is_action_just_pressed("loot"),
+		is_done = Input.is_action_just_pressed("debug_done")
 	}
 
 #Gets an event out from the given input
@@ -90,6 +108,10 @@ static func decode_raw_input(input):
 		event = Events.WALK
 	
 	# Override what happends above as these have precedents
+	if input.is_looting:
+		event = Events.LOOT
+	if input.is_done:
+		event = Events.DONE
 	#if input.is_jumping:
 	#	event = Events.JUMP
 	#if input.is_bumping:
@@ -111,6 +133,9 @@ func enter_state():
 		States.WALK, States.RUN:
 			_max_speed = SPEED[state]
 			#$AnimationPlayer.play("move")
+		
+		States.LOOT:
+			motion = Vector2.ZERO
 
 # Logic handles player movement for each state
 func player_movement(delta, input):
@@ -123,8 +148,8 @@ func player_movement(delta, input):
 # match it's rotation to the users rotation, and then give it a foward velocity
 # in the set direction.
 func fire_gun():
-	#Check if player is pressing the fire key
-	if Input.is_action_just_pressed("fire") and can_fire:
+	#Check if player is pressing the fire key, and if they can aim
+	if Input.is_action_just_pressed("fire") and can_fire and AIM[state]:
 		var bullet_instance =bullet.instance()
 		bullet_instance.position = bullet_spawn.get_global_position()
 		bullet_instance.rotation_degrees = rotation_degrees
