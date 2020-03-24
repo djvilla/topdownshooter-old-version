@@ -23,4 +23,6 @@ region_rect = Rect2( 697, 816, 23, 73 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.5708
 shape = SubResource( 1 )
+
+[node name="Timer" type="Timer" parent="."]
 [connection signal="body_entered" from="." to="." method="_on_Bullet_body_entered"]
