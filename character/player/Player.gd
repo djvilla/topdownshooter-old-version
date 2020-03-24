@@ -7,6 +7,7 @@ enum States {
 	IDLE,
 	WALK,
 	RUN,
+	SNEAK,
 	LOOT
 }
 
@@ -18,18 +19,21 @@ enum Events {
 	IDLE,
 	WALK,
 	RUN,
+	SNEAK,
 	LOOT,
 	DONE
 }
 
 const SPEED = {
 	States.WALK: 250,
-	States.RUN: 400
+	States.RUN: 400,
+	States.SNEAK: 125
 }
 
 const MOVE_STRATEGY = {
 	States.WALK: MoveStrategy,
-	States.RUN: MoveStrategy
+	States.RUN: MoveStrategy,
+	States.SNEAK: MoveStrategy
 }
 
 # Determines which states allow you to aim
@@ -37,6 +41,7 @@ const AIM = {
 	States.IDLE: true,
 	States.WALK: true,
 	States.RUN: true,
+	States.SNEAK: true,
 	States.LOOT: false
 }
 
@@ -60,12 +65,19 @@ func _init() -> void:
 		[States.IDLE, Events.WALK]: States.WALK,
 		[States.IDLE, Events.RUN]: States.RUN,
 		[States.IDLE, Events.LOOT]: States.LOOT,
+		[States.IDLE, Events.SNEAK]: States.SNEAK,
 		[States.WALK, Events.STOP]: States.IDLE,
 		[States.WALK, Events.RUN]: States.RUN,
 		[States.WALK, Events.LOOT]: States.LOOT,
+		[States.WALK, Events.SNEAK]: States.SNEAK,
 		[States.RUN, Events.STOP]: States.IDLE,
 		[States.RUN, Events.WALK]: States.WALK,
 		[States.RUN, Events.LOOT]: States.LOOT,
+		[States.RUN, Events.SNEAK]: States.SNEAK,
+		[States.SNEAK, Events.STOP]: States.IDLE,
+		[States.SNEAK, Events.WALK]: States.WALK,
+		[States.SNEAK, Events.RUN]: States.RUN,
+		[States.SNEAK, Events.LOOT]: States.LOOT,
 		[States.LOOT, Events.DONE]: States.IDLE,
 	}
 
@@ -91,6 +103,7 @@ static func get_raw_input(state):
 	return {
 		direction = utils.get_input_direction(),
 		is_running = Input.is_action_pressed("run"),
+		is_sneaking = Input.is_action_pressed("sneak"),
 		is_looting = Input.is_action_just_pressed("loot"),
 		is_done = Input.is_action_just_pressed("debug_done")
 	}
@@ -104,6 +117,8 @@ static func decode_raw_input(input):
 		event = Events.STOP
 	elif input.is_running:
 		event = Events.RUN
+	elif input.is_sneaking:
+		event = Events.SNEAK
 	else:
 		event = Events.WALK
 	
@@ -130,7 +145,7 @@ func enter_state():
 			motion = Vector2.ZERO
 			_max_speed = SPEED[States.WALK]
 		
-		States.WALK, States.RUN:
+		States.WALK, States.RUN, States.SNEAK:
 			_max_speed = SPEED[state]
 			#$AnimationPlayer.play("move")
 		
@@ -140,7 +155,7 @@ func enter_state():
 # Logic handles player movement for each state
 func player_movement(delta, input):
 	match state:
-		States.WALK, States.RUN:
+		States.WALK, States.RUN, States.SNEAK:
 			motion = MOVE_STRATEGY[state].go(input.direction, ACCELERATION, _max_speed, motion, delta)
 			move_and_slide(motion)
 
