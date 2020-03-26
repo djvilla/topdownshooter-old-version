@@ -7,7 +7,8 @@ var _state_text = {
 	Player.States.WALK: "walk",
 	Player.States.RUN: "run",
 	Player.States.LOOT: "loot",
-	Player.States.SNEAK: "sneak"
+	Player.States.SNEAK: "sneak",
+	Player.States.MELEE: "melee"
 }
 
 

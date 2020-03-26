@@ -8,6 +8,7 @@ enum States {
 	WALK,
 	RUN,
 	SNEAK,
+	MELEE,
 	LOOT
 }
 
@@ -20,6 +21,7 @@ enum Events {
 	WALK,
 	RUN,
 	SNEAK,
+	MELEE,
 	LOOT,
 	DONE
 }
@@ -42,6 +44,7 @@ const AIM = {
 	States.WALK: true,
 	States.RUN: true,
 	States.SNEAK: true,
+	States.MELEE: true,
 	States.LOOT: false
 }
 
@@ -66,19 +69,24 @@ func _init() -> void:
 		[States.IDLE, Events.RUN]: States.RUN,
 		[States.IDLE, Events.LOOT]: States.LOOT,
 		[States.IDLE, Events.SNEAK]: States.SNEAK,
+		[States.IDLE, Events.MELEE]: States.MELEE,
 		[States.WALK, Events.STOP]: States.IDLE,
 		[States.WALK, Events.RUN]: States.RUN,
 		[States.WALK, Events.LOOT]: States.LOOT,
 		[States.WALK, Events.SNEAK]: States.SNEAK,
+		[States.WALK, Events.MELEE]: States.MELEE,
 		[States.RUN, Events.STOP]: States.IDLE,
 		[States.RUN, Events.WALK]: States.WALK,
 		[States.RUN, Events.LOOT]: States.LOOT,
 		[States.RUN, Events.SNEAK]: States.SNEAK,
+		[States.RUN, Events.MELEE]: States.MELEE,
 		[States.SNEAK, Events.STOP]: States.IDLE,
 		[States.SNEAK, Events.WALK]: States.WALK,
 		[States.SNEAK, Events.RUN]: States.RUN,
 		[States.SNEAK, Events.LOOT]: States.LOOT,
+		[States.SNEAK, Events.MELEE]: States.MELEE,
 		[States.LOOT, Events.DONE]: States.IDLE,
+		[States.MELEE, Events.DONE]: States.IDLE,
 	}
 
 func _process(delta):
@@ -104,6 +112,7 @@ static func get_raw_input(state):
 		direction = utils.get_input_direction(),
 		is_running = Input.is_action_pressed("run"),
 		is_sneaking = Input.is_action_pressed("sneak"),
+		is_meleeing = Input.is_action_just_pressed("melee"),
 		is_looting = Input.is_action_just_pressed("loot"),
 		is_done = Input.is_action_just_pressed("debug_done")
 	}
@@ -123,6 +132,8 @@ static func decode_raw_input(input):
 		event = Events.WALK
 	
 	# Override what happends above as these have precedents
+	if input.is_meleeing:
+		event = Events.MELEE
 	if input.is_looting:
 		event = Events.LOOT
 	if input.is_done:
@@ -148,6 +159,9 @@ func enter_state():
 		States.WALK, States.RUN, States.SNEAK:
 			_max_speed = SPEED[state]
 			#$AnimationPlayer.play("move")
+		
+		States.MELEE:
+			pass
 		
 		States.LOOT:
 			motion = Vector2.ZERO
