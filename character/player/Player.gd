@@ -1,6 +1,6 @@
 extends "res://character/character.gd"
 
-const MoveStrategy = preload("res://character/player/move-strategy.gd")
+const MoveStrategy = preload("res://character/move-strategy.gd")
 
 # The state this player is in
 enum States {
