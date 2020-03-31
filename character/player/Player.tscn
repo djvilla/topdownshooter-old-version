@@ -7,13 +7,13 @@
 [node name="Player" instance=ExtResource( 2 )]
 script = ExtResource( 3 )
 
-[node name="BulletPoint" type="Node2D" parent="." index="3"]
+[node name="BulletPoint" type="Node2D" parent="." index="2"]
 position = Vector2( 45.622, 8.014 )
 
-[node name="BulletShot" type="AudioStreamPlayer2D" parent="." index="4"]
+[node name="BulletShot" type="AudioStreamPlayer2D" parent="." index="3"]
 stream = ExtResource( 1 )
 
-[node name="Camera2D" type="Camera2D" parent="." index="5"]
+[node name="Camera2D" type="Camera2D" parent="." index="4"]
 current = true
 zoom = Vector2( 1.5, 1.5 )
 smoothing_enabled = true

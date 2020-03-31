@@ -161,7 +161,7 @@ func enter_state():
 			#$AnimationPlayer.play("move")
 		
 		States.MELEE:
-			pass
+			can_fire = false # Must return to true when melee is done
 		
 		States.LOOT:
 			motion = Vector2.ZERO
