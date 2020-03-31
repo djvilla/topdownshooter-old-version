@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://character/player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://helpers/state-label-world.gd" type="Script" id=2]
 
 [node name="Debug_World" type="Node2D"]
 
@@ -23,3 +24,18 @@ position = Vector2( 216, 384 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D3"]
 polygon = PoolVector2Array( 16, 64, 160, 64, 280, 56, 200, 136, 32, 160, -16, 136 )
+
+[node name="Interface" type="CanvasLayer" parent="."]
+follow_viewport_scale = 0.001
+
+[node name="StateLabel" type="Label" parent="Interface"]
+margin_left = 62.9892
+margin_top = 73.0769
+margin_right = 102.989
+margin_bottom = 87.0769
+text = "STATE"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="state_change" from="Player" to="Interface/StateLabel" method="_on_Player_state_change"]
