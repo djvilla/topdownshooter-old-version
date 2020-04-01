@@ -15,8 +15,8 @@ var weapon = null
 # For complex games, add an intalize function on the state label than
 # pass this node to let it connect. For a small project, this is fine
 func _ready() -> void:
+	$Health.connect("health_changed", self, "_on_Health_health_change")
 	#$StateLabel.setup(self)
-	pass
 	
 
 # Take input and convert it to event
@@ -34,4 +34,8 @@ func change_state(event):
 func enter_state():
 	pass
 
+func _on_Health_health_change(new_health):
+	#_change_state(State.IDLE)
+	if(new_health == 0):
+		queue_free()
 
