@@ -10,7 +10,9 @@ func _ready():
 	timer.start()
 
 func _on_Bullet_body_entered(body):
-	if !body.is_in_group("character") and body.has_node("Health"):
+	if !body.is_in_group("character"):
+		queue_free()
+	elif body.is_in_group("character") and body.has_node("Health"):
 		body.get_node("Health").take_damage(1)
 		queue_free()
 

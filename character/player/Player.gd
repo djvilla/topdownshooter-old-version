@@ -58,7 +58,7 @@ onready var bullet_spawn = $BulletPoint
 onready var bullet_noise = $BulletShot
 export var bullet_speed = 1000
 export var fire_rate = 0.2 # In seconds
-var bullet = preload("res://character/player/Bullet/Bullet.tscn")
+var bullet = preload("res://character/Bullet/Bullet.tscn")
 var can_fire = true #Helps to keep shots constant and not all at once
 
 # Constuctor, to overwrite _transitions
