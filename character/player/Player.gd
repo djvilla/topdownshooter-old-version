@@ -185,6 +185,7 @@ func fire_gun():
 		bullet_instance.apply_impulse(Vector2.ZERO, Vector2(bullet_speed, 0).rotated(rotation))
 		# Using properties above, spawn bullet
 		get_tree().get_root().add_child(bullet_instance)
+		#Animates here for smoke or flash
 		bullet_noise.play(0.1) # 0.1 skips that click at the begining of the audio clip
 		can_fire = false
 		yield(get_tree().create_timer(fire_rate), "timeout")

@@ -10,7 +10,8 @@ func _ready():
 	timer.start()
 
 func _on_Bullet_body_entered(body):
-	if !body.is_in_group("character"):
+	if !body.is_in_group("character") and body.has_node("Health"):
+		body.get_node("Health").take_damage(1)
 		queue_free()
 
 #Function removes the bullet from the current scene

@@ -29,10 +29,10 @@ polygon = PoolVector2Array( 16, 64, 160, 64, 280, 56, 200, 136, 32, 160, -16, 13
 follow_viewport_scale = 0.001
 
 [node name="StateLabel" type="Label" parent="Interface"]
-margin_left = 62.9892
-margin_top = 73.0769
-margin_right = 102.989
-margin_bottom = 87.0769
+margin_left = 24.0
+margin_top = 64.0
+margin_right = 64.0
+margin_bottom = 78.0
 text = "STATE"
 script = ExtResource( 2 )
 __meta__ = {
