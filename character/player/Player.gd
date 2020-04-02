@@ -1,6 +1,7 @@
 extends "res://character/character.gd"
 
 const MoveStrategy = preload("res://character/move-strategy.gd")
+const FireStrategy = preload("res://character/fire_strategy.gd")
 
 # The state this player is in
 enum States {
@@ -58,7 +59,7 @@ onready var bullet_spawn = $BulletPoint
 onready var bullet_noise = $BulletShot
 export var bullet_speed = 1000
 export var fire_rate = 0.2 # In seconds
-var bullet = preload("res://character/Bullet/Bullet.tscn")
+var bullet = preload("res://character/bullet/Bullet.tscn")
 var can_fire = true #Helps to keep shots constant and not all at once
 
 # Constuctor, to overwrite _transitions
@@ -179,10 +180,7 @@ func player_movement(delta, input):
 func fire_gun():
 	#Check if player is pressing the fire key, and if they can aim
 	if Input.is_action_just_pressed("fire") and can_fire and AIM[state]:
-		var bullet_instance =bullet.instance()
-		bullet_instance.position = bullet_spawn.get_global_position()
-		bullet_instance.rotation_degrees = rotation_degrees
-		bullet_instance.apply_impulse(Vector2.ZERO, Vector2(bullet_speed, 0).rotated(rotation))
+		var bullet_instance = FireStrategy.create_bullet_instance(bullet, bullet_spawn, bullet_speed, rotation, rotation_degrees)
 		# Using properties above, spawn bullet
 		get_tree().get_root().add_child(bullet_instance)
 		#Animates here for smoke or flash
