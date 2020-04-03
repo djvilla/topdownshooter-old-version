@@ -185,8 +185,15 @@ func fire_gun():
 
 func melee_attack():
 	if Input.is_action_just_pressed("melee"):
+		# Disable fireing while meleeing
+		can_fire = false
 		$AnimationPlayer.play("melee")
 
 func _on_MeleeHit_body_entered(body):
 	if body.is_in_group(attack_group):
 		body.take_damage(self, melee_damage)
+
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if anim_name == "melee":
+		can_fire = true
