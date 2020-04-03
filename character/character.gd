@@ -18,6 +18,7 @@ var weapon = null
 # pass this node to let it connect. For a small project, this is fine
 func _ready() -> void:
 	health_util.connect("health_changed", self, "_on_Health_health_change")
+	$AnimationPlayer.play("BASE")
 	#$StateLabel.setup(self)
 	
 
