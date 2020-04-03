@@ -37,7 +37,7 @@ func enter_state():
 
 # Characters method to take damage
 func take_damage(source, amount):
-	if self.is_a_parent_of(source):
+	if self.is_a_parent_of(source) or self == source:
 		return
 	health_util.take_damage(amount)
 
