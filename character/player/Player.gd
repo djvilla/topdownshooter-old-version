@@ -9,7 +9,6 @@ enum States {
 	WALK,
 	RUN,
 	SNEAK,
-	MELEE,
 	LOOT
 }
 
@@ -22,7 +21,6 @@ enum Events {
 	WALK,
 	RUN,
 	SNEAK,
-	MELEE,
 	LOOT,
 	DONE
 }
@@ -45,7 +43,6 @@ const AIM = {
 	States.WALK: true,
 	States.RUN: true,
 	States.SNEAK: true,
-	States.MELEE: true,
 	States.LOOT: false
 }
 
@@ -62,6 +59,13 @@ export var fire_rate = 0.2 # In seconds
 var bullet = preload("res://character/bullet/Bullet.tscn")
 var can_fire = true #Helps to keep shots constant and not all at once
 
+# Melee variable
+onready var melee = $MeleeHit
+var attack_group = "character"
+var melee_damage = 2
+var melee_rate = 0.2
+var can_melee = true # Helps make sure the melee isn't spammed
+
 # Constuctor, to overwrite _transitions
 func _init() -> void:
 	# All state transitions when an event occurs
@@ -70,24 +74,19 @@ func _init() -> void:
 		[States.IDLE, Events.RUN]: States.RUN,
 		[States.IDLE, Events.LOOT]: States.LOOT,
 		[States.IDLE, Events.SNEAK]: States.SNEAK,
-		[States.IDLE, Events.MELEE]: States.MELEE,
 		[States.WALK, Events.STOP]: States.IDLE,
 		[States.WALK, Events.RUN]: States.RUN,
 		[States.WALK, Events.LOOT]: States.LOOT,
 		[States.WALK, Events.SNEAK]: States.SNEAK,
-		[States.WALK, Events.MELEE]: States.MELEE,
 		[States.RUN, Events.STOP]: States.IDLE,
 		[States.RUN, Events.WALK]: States.WALK,
 		[States.RUN, Events.LOOT]: States.LOOT,
 		[States.RUN, Events.SNEAK]: States.SNEAK,
-		[States.RUN, Events.MELEE]: States.MELEE,
 		[States.SNEAK, Events.STOP]: States.IDLE,
 		[States.SNEAK, Events.WALK]: States.WALK,
 		[States.SNEAK, Events.RUN]: States.RUN,
 		[States.SNEAK, Events.LOOT]: States.LOOT,
-		[States.SNEAK, Events.MELEE]: States.MELEE,
 		[States.LOOT, Events.DONE]: States.IDLE,
-		[States.MELEE, Events.DONE]: States.IDLE,
 	}
 
 func _process(delta):
@@ -106,6 +105,7 @@ func _physics_process(delta):
 	player_movement(delta, input)
 	
 	fire_gun()
+	melee_attack()
 
 # Gets the input of the player
 static func get_raw_input(state):
@@ -113,7 +113,6 @@ static func get_raw_input(state):
 		direction = utils.get_input_direction(),
 		is_running = Input.is_action_pressed("run"),
 		is_sneaking = Input.is_action_pressed("sneak"),
-		is_meleeing = Input.is_action_just_pressed("melee"),
 		is_looting = Input.is_action_just_pressed("loot"),
 		is_done = Input.is_action_just_pressed("debug_done")
 	}
@@ -133,8 +132,6 @@ static func decode_raw_input(input):
 		event = Events.WALK
 	
 	# Override what happends above as these have precedents
-	if input.is_meleeing:
-		event = Events.MELEE
 	if input.is_looting:
 		event = Events.LOOT
 	if input.is_done:
@@ -161,9 +158,6 @@ func enter_state():
 			_max_speed = SPEED[state]
 			#$AnimationPlayer.play("move")
 		
-		States.MELEE:
-			can_fire = false # Must return to true when melee is done
-		
 		States.LOOT:
 			motion = Vector2.ZERO
 
@@ -188,3 +182,11 @@ func fire_gun():
 		can_fire = false
 		yield(get_tree().create_timer(fire_rate), "timeout")
 		can_fire = true
+
+func melee_attack():
+	if Input.is_action_just_pressed("melee"):
+		$AnimationPlayer.play("melee")
+
+func _on_MeleeHit_body_entered(body):
+	if body.is_in_group(attack_group):
+		body.take_damage(self, melee_damage)
