@@ -1,7 +1,6 @@
 extends "res://character/character.gd"
 
 const MoveStrategy = preload("res://character/move-strategy.gd")
-const FireStrategy = preload("res://character/fire_strategy.gd")
 
 # The state this player is in
 enum States {
@@ -54,10 +53,6 @@ var motion = Vector2.ZERO
 # Bullet Variables
 onready var bullet_spawn = $BulletPoint
 onready var bullet_noise = $BulletShot
-export var bullet_speed = 1000
-export var fire_rate = 0.2 # In seconds
-var bullet = preload("res://character/bullet/Bullet.tscn")
-var can_fire = true #Helps to keep shots constant and not all at once
 
 # Melee variable
 onready var melee = $MeleeHit
@@ -88,6 +83,14 @@ func _init() -> void:
 		[States.SNEAK, Events.LOOT]: States.LOOT,
 		[States.LOOT, Events.DONE]: States.IDLE,
 	}
+
+func _ready() -> void:
+	weapon_path = "res://character/weapon/gun/Gun.tscn"
+	#if not weapon_path:
+	#	return
+	var weapon_node = load(weapon_path).instance()
+	weapon = weapon_node
+	
 
 func _process(delta):
 	# Player look at mouse position
@@ -173,20 +176,13 @@ func player_movement(delta, input):
 # in the set direction.
 func fire_gun():
 	#Check if player is pressing the fire key, and if they can aim
-	if Input.is_action_just_pressed("fire") and can_fire and AIM[state]:
-		var bullet_instance = FireStrategy.create_bullet_instance(bullet, bullet_spawn, bullet_speed, rotation, rotation_degrees)
-		# Using properties above, spawn bullet
-		get_tree().get_root().add_child(bullet_instance)
-		#Animates here for smoke or flash
-		bullet_noise.play(0.1) # 0.1 skips that click at the begining of the audio clip
-		can_fire = false
-		yield(get_tree().create_timer(fire_rate), "timeout")
-		can_fire = true
+	if Input.is_action_just_pressed("fire") and AIM[state]:
+		weapon.use_weapon(self, can_melee, bullet_spawn, bullet_noise)
 
 func melee_attack():
 	if Input.is_action_just_pressed("melee"):
 		# Disable fireing while meleeing
-		can_fire = false
+		can_melee = false
 		$AnimationPlayer.play("melee")
 
 func _on_MeleeHit_body_entered(body):
@@ -196,4 +192,4 @@ func _on_MeleeHit_body_entered(body):
 
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if anim_name == "melee":
-		can_fire = true
+		can_melee = true
