@@ -56,7 +56,7 @@ const AIM = {
 # Maps the type of weapon the player is holding
 var equipped_weapon = {
 	Gun_Slots.PRIMARY: "res://character/weapon/gun/machine_gun/MachineGun.tscn",
-	Gun_Slots.SECONDARY: "res://character/weapon/gun/gun.gd"
+	Gun_Slots.SECONDARY: "res://character/weapon/gun/pistol/Pistol.tscn"
 }
 
 # Movement Variables
@@ -101,6 +101,7 @@ func _ready() -> void:
 	weapon = load(equipped_weapon[Gun_Slots.PRIMARY]).instance()
 	# Add child to the tree
 	add_child(weapon)
+	emit_signal("weapon_change", weapon)
 	
 
 func _process(delta):
@@ -120,6 +121,7 @@ func _physics_process(delta):
 	
 	fire_gun()
 	melee_attack()
+	switch_weapon()
 
 # Gets the input of the player
 static func get_raw_input(state):
@@ -197,7 +199,15 @@ func melee_attack():
 		$AnimationPlayer.play("melee")
 
 func switch_weapon():
-	pass
+	if Input.is_action_just_pressed("weapon1"):
+		remove_child(weapon)
+		weapon = load(equipped_weapon[Gun_Slots.PRIMARY]).instance()
+		add_child(weapon)
+	elif Input.is_action_just_pressed("weapon2"):
+		remove_child(weapon)
+		weapon = load(equipped_weapon[Gun_Slots.SECONDARY]).instance()
+		add_child(weapon)
+	emit_signal("weapon_change", weapon)
 
 func _on_MeleeHit_body_entered(body):
 	if body.is_in_group(attack_group):
