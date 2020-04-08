@@ -1,6 +1,6 @@
 extends "res://character/character.gd"
 
-signal weapon_change(weapon)
+signal weapon_change(weapon_current)
 
 const MoveStrategy = preload("res://character/move-strategy.gd")
 
@@ -53,10 +53,13 @@ const AIM = {
 	States.LOOT: false
 }
 
+var weapon1
+var weapon2
+
 # Maps the type of weapon the player is holding
 var equipped_weapon = {
-	Gun_Slots.PRIMARY: "res://character/weapon/gun/machine_gun/MachineGun.tscn",
-	Gun_Slots.SECONDARY: "res://character/weapon/gun/pistol/Pistol.tscn"
+	Gun_Slots.PRIMARY: weapon1,
+	Gun_Slots.SECONDARY: weapon2
 }
 
 # Movement Variables
@@ -98,10 +101,18 @@ func _init() -> void:
 	}
 
 func _ready() -> void:
-	weapon = load(equipped_weapon[Gun_Slots.PRIMARY]).instance()
+	# Load starting weapons as nodes
+	equipped_weapon[Gun_Slots.PRIMARY] = load("res://character/weapon/gun/machine_gun/MachineGun.tscn").instance()
+	equipped_weapon[Gun_Slots.SECONDARY] = load("res://character/weapon/gun/pistol/Pistol.tscn").instance()
+	
+	# Add them to the scene
+	add_child(equipped_weapon[Gun_Slots.PRIMARY])
+	add_child(equipped_weapon[Gun_Slots.SECONDARY])
+	
+	# Equip for current weapon
+	weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
 	# Add child to the tree
-	add_child(weapon)
-	emit_signal("weapon_change", weapon)
+	emit_signal("weapon_change", weapon_current)
 	
 
 func _process(delta):
@@ -190,7 +201,7 @@ func player_movement(delta, input):
 func fire_gun():
 	#Check if player is pressing the fire key, and if they can aim
 	if Input.is_action_pressed("fire") and AIM[state]:
-		weapon.use_weapon(self, can_melee, bullet_spawn)
+		weapon_current.use_weapon(self, can_melee, bullet_spawn)
 
 func melee_attack():
 	if Input.is_action_just_pressed("melee"):
@@ -199,15 +210,11 @@ func melee_attack():
 		$AnimationPlayer.play("melee")
 
 func switch_weapon():
-	if Input.is_action_just_pressed("weapon1"):
-		remove_child(weapon)
-		weapon = load(equipped_weapon[Gun_Slots.PRIMARY]).instance()
-		add_child(weapon)
-	elif Input.is_action_just_pressed("weapon2"):
-		remove_child(weapon)
-		weapon = load(equipped_weapon[Gun_Slots.SECONDARY]).instance()
-		add_child(weapon)
-	emit_signal("weapon_change", weapon)
+	if Input.is_action_just_pressed("weapon1")&& weapon_current != equipped_weapon[Gun_Slots.PRIMARY]:
+		weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
+	elif Input.is_action_just_pressed("weapon2") && weapon_current != equipped_weapon[Gun_Slots.SECONDARY]:
+		weapon_current = equipped_weapon[Gun_Slots.SECONDARY]
+	emit_signal("weapon_change", weapon_current)
 
 func _on_MeleeHit_body_entered(body):
 	if body.is_in_group(attack_group):
