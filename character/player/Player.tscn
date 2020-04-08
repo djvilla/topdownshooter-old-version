@@ -15,7 +15,5 @@ zoom = Vector2( 1.5, 1.5 )
 smoothing_enabled = true
 smoothing_speed = 10.0
 editor_draw_drag_margin = true
-
-[node name="BulletShot" type="AudioStreamPlayer2D" parent="." index="7"]
 [connection signal="body_entered" from="MeleeHit" to="." method="_on_MeleeHit_body_entered"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

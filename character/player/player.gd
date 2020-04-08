@@ -52,7 +52,6 @@ var motion = Vector2.ZERO
 
 # Bullet Variables
 onready var bullet_spawn = $BulletPoint
-onready var bullet_noise = $BulletShot
 
 # Melee variable
 onready var melee = $MeleeHit
@@ -89,6 +88,8 @@ func _ready() -> void:
 	#if not weapon_path:
 	#	return
 	weapon = load(weapon_path).instance()
+	# Add child to the tree
+	add_child(weapon)
 	
 
 func _process(delta):
@@ -176,7 +177,7 @@ func player_movement(delta, input):
 func fire_gun():
 	#Check if player is pressing the fire key, and if they can aim
 	if Input.is_action_just_pressed("fire") and AIM[state]:
-		weapon.use_weapon(self, can_melee, bullet_spawn, bullet_noise)
+		weapon.use_weapon(self, can_melee, bullet_spawn)
 
 func melee_attack():
 	if Input.is_action_just_pressed("melee"):
