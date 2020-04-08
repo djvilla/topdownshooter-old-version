@@ -11,7 +11,6 @@ var state = 0 # Base State, IDLE
 # Transition will be like this: [state, event]
 var _transitions = {}
 
-export(String) var weapon_path = ""
 var weapon = null
 
 # For complex games, add an intalize function on the state label than

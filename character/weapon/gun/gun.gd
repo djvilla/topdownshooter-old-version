@@ -3,7 +3,7 @@ extends Node2D
 var weapon_name = ""
 
 export var bullet_speed = 1000
-export var fire_rate = 0.2 # In seconds
+export var fire_rate = 1 # In seconds, "1" = 10 seconds
 var noise_path = "res://sound/gun_revolver_pistol_shot_01.wav"
 onready var bullet_noise = $BulletShot
 var bullet = preload("res://character/bullet/Bullet.tscn")

@@ -1,5 +1,7 @@
 extends "res://character/character.gd"
 
+signal weapon_change(weapon)
+
 const MoveStrategy = preload("res://character/move-strategy.gd")
 
 # The state this player is in
@@ -24,6 +26,12 @@ enum Events {
 	DONE
 }
 
+# Determines which slots exist for the player
+enum Gun_Slots{
+	PRIMARY,
+	SECONDARY
+}
+
 const SPEED = {
 	States.WALK: 250,
 	States.RUN: 400,
@@ -43,6 +51,12 @@ const AIM = {
 	States.RUN: true,
 	States.SNEAK: true,
 	States.LOOT: false
+}
+
+# Maps the type of weapon the player is holding
+var equipped_weapon = {
+	Gun_Slots.PRIMARY: "res://character/weapon/gun/machine_gun/MachineGun.tscn",
+	Gun_Slots.SECONDARY: "res://character/weapon/gun/gun.gd"
 }
 
 # Movement Variables
@@ -84,10 +98,7 @@ func _init() -> void:
 	}
 
 func _ready() -> void:
-	weapon_path = "res://character/weapon/gun/Gun.tscn"
-	#if not weapon_path:
-	#	return
-	weapon = load(weapon_path).instance()
+	weapon = load(equipped_weapon[Gun_Slots.PRIMARY]).instance()
 	# Add child to the tree
 	add_child(weapon)
 	
@@ -176,7 +187,7 @@ func player_movement(delta, input):
 # in the set direction.
 func fire_gun():
 	#Check if player is pressing the fire key, and if they can aim
-	if Input.is_action_just_pressed("fire") and AIM[state]:
+	if Input.is_action_pressed("fire") and AIM[state]:
 		weapon.use_weapon(self, can_melee, bullet_spawn)
 
 func melee_attack():
@@ -184,6 +195,9 @@ func melee_attack():
 		# Disable fireing while meleeing
 		can_melee = false
 		$AnimationPlayer.play("melee")
+
+func switch_weapon():
+	pass
 
 func _on_MeleeHit_body_entered(body):
 	if body.is_in_group(attack_group):
