@@ -88,8 +88,7 @@ func _ready() -> void:
 	weapon_path = "res://character/weapon/gun/Gun.tscn"
 	#if not weapon_path:
 	#	return
-	var weapon_node = load(weapon_path).instance()
-	weapon = weapon_node
+	weapon = load(weapon_path).instance()
 	
 
 func _process(delta):
