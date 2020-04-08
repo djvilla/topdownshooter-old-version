@@ -11,7 +11,7 @@ var state = 0 # Base State, IDLE
 # Transition will be like this: [state, event]
 var _transitions = {}
 
-var weapon = null
+var weapon_current = null
 
 # For complex games, add an intalize function on the state label than
 # pass this node to let it connect. For a small project, this is fine
