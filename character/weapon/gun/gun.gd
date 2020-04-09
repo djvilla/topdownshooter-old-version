@@ -1,24 +1,42 @@
 extends Node2D
 
+signal ammo_amount_changed(ammo_amount, max_ammo)
+
 var weapon_name = ""
 
 export var bullet_speed = 1000
 export var fire_rate = 1 # In seconds, "1" = 10 seconds
-var noise_path = "res://sound/gun_revolver_pistol_shot_01.wav"
-onready var bullet_noise = $BulletShot
+onready var bullet_sfx = $BulletShot
 var bullet = preload("res://character/bullet/Bullet.tscn")
+var bullet_noise = load("res://sound/gun_revolver_pistol_shot_01.wav")
+var bullet_noise_empty= load("res://sound/gun_pistol_dry_fire_01.wav")
 var can_fire = true #Helps to keep shots constant and not shooting all at once
+
+var max_ammo = 10
+var ammo_amount = max_ammo
 
 # Allows the character to fire the weapon when they can fire and when they are not meleeing
 func use_weapon(character, is_not_using_melee, bullet_spawn):
-	if can_fire && is_not_using_melee:
+	if can_fire && is_not_using_melee && ammo_amount > 0:
 		var bullet_instance = _create_bullet_instance(bullet_spawn, character.rotation, character.rotation_degrees)
 		# Using properties above, spawn bullet
 		character.get_tree().get_root().add_child(bullet_instance)
 		# Animation here for smoke or flash
-		# 
-		#bullet_noise.stream = load(noise_path)
-		bullet_noise.play(0.1) # 0.1 skips that click at the beginning of the audio clip
+		
+		if bullet_sfx.stream != bullet_noise:
+			bullet_sfx.stream = bullet_noise
+		bullet_sfx.play(0.1) # 0.1 skips that click at the beginning of the audio clip
+		# Reduce ammunition
+		reduce_ammo()
+		# Set the fire rate boolean and timer 
+		can_fire = false
+		yield(character.get_tree().create_timer(fire_rate), "timeout")
+		can_fire = true
+	elif can_fire && is_not_using_melee && ammo_amount <= 0:
+		if bullet_sfx.stream != bullet_noise_empty:
+			bullet_sfx.stream = bullet_noise_empty
+		bullet_sfx.play()
+		# Set the fire rate boolean and timer 
 		can_fire = false
 		yield(character.get_tree().create_timer(fire_rate), "timeout")
 		can_fire = true
@@ -31,3 +49,8 @@ func _create_bullet_instance(bullet_spawn, rotation, rotation_degrees):
 	bullet_instance.rotation_degrees = rotation_degrees
 	bullet_instance.apply_impulse(Vector2.ZERO, Vector2(bullet_speed, 0).rotated(rotation))
 	return bullet_instance
+
+# Reduce the amount of ammo the weapon currently has when called
+func reduce_ammo():
+	ammo_amount -= 1
+	emit_signal("ammo_amount_changed", ammo_amount, max_ammo)
