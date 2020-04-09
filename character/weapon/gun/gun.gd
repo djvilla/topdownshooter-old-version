@@ -17,25 +17,21 @@ var ammo_amount = max_ammo
 
 # Allows the character to fire the weapon when they can fire and when they are not meleeing
 func use_weapon(character, is_not_using_melee, bullet_spawn):
-	if can_fire && is_not_using_melee && ammo_amount > 0:
-		var bullet_instance = _create_bullet_instance(bullet_spawn, character.rotation, character.rotation_degrees)
-		# Using properties above, spawn bullet
-		character.get_tree().get_root().add_child(bullet_instance)
-		# Animation here for smoke or flash
+	if can_fire && is_not_using_melee:
+		if ammo_amount > 0:
+			var bullet_instance = _create_bullet_instance(bullet_spawn, character.rotation, character.rotation_degrees)
+			# Using properties above, spawn bullet
+			character.get_tree().get_root().add_child(bullet_instance)
+			# Animation here for smoke or flash
+			# Reduce ammunition
+			reduce_ammo()
+			if bullet_sfx.stream != bullet_noise:
+				bullet_sfx.stream = bullet_noise
+		else:
+			if bullet_sfx.stream != bullet_noise_empty:
+				bullet_sfx.stream = bullet_noise_empty
 		
-		if bullet_sfx.stream != bullet_noise:
-			bullet_sfx.stream = bullet_noise
-		bullet_sfx.play(0.1) # 0.1 skips that click at the beginning of the audio clip
-		# Reduce ammunition
-		reduce_ammo()
-		# Set the fire rate boolean and timer 
-		can_fire = false
-		yield(character.get_tree().create_timer(fire_rate), "timeout")
-		can_fire = true
-	elif can_fire && is_not_using_melee && ammo_amount <= 0:
-		if bullet_sfx.stream != bullet_noise_empty:
-			bullet_sfx.stream = bullet_noise_empty
-		bullet_sfx.play()
+		bullet_sfx.play() # 0.1 skips that click at the beginning of the audio clip
 		# Set the fire rate boolean and timer 
 		can_fire = false
 		yield(character.get_tree().create_timer(fire_rate), "timeout")
