@@ -111,6 +111,7 @@ func _ready() -> void:
 	
 	# Equip for current weapon
 	weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
+	weapon_current.update_ammo()
 	# Add child to the tree
 	emit_signal("weapon_change", weapon_current)
 	
@@ -215,6 +216,7 @@ func switch_weapon():
 	elif Input.is_action_just_pressed("weapon2") && weapon_current != equipped_weapon[Gun_Slots.SECONDARY]:
 		weapon_current = equipped_weapon[Gun_Slots.SECONDARY]
 	emit_signal("weapon_change", weapon_current)
+	weapon_current.update_ammo()
 
 func _on_MeleeHit_body_entered(body):
 	if body.is_in_group(attack_group):
