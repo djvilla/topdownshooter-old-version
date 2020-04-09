@@ -13,7 +13,10 @@ var bullet_noise_empty= load("res://sound/gun_pistol_dry_fire_01.wav")
 var can_fire = true #Helps to keep shots constant and not shooting all at once
 
 var max_ammo = 10
-var ammo_amount = max_ammo
+var ammo_amount
+
+func _ready():
+	get_tree().get_root().get_node("Debug_World/Interface/AmmoLabel").setup(self)
 
 # Allows the character to fire the weapon when they can fire and when they are not meleeing
 func use_weapon(character, is_not_using_melee, bullet_spawn):
@@ -24,7 +27,7 @@ func use_weapon(character, is_not_using_melee, bullet_spawn):
 			character.get_tree().get_root().add_child(bullet_instance)
 			# Animation here for smoke or flash
 			# Reduce ammunition
-			reduce_ammo()
+			_reduce_ammo()
 			if bullet_sfx.stream != bullet_noise:
 				bullet_sfx.stream = bullet_noise
 		else:
@@ -37,6 +40,10 @@ func use_weapon(character, is_not_using_melee, bullet_spawn):
 		yield(character.get_tree().create_timer(fire_rate), "timeout")
 		can_fire = true
 
+# Update the signal when weapons are switched. For Label
+func update_ammo():
+	emit_signal("ammo_amount_changed", ammo_amount, max_ammo)
+
 # This function creates an instance of a bullet on the given bullet spawn.
 # matches the characters direction
 func _create_bullet_instance(bullet_spawn, rotation, rotation_degrees):
@@ -47,6 +54,6 @@ func _create_bullet_instance(bullet_spawn, rotation, rotation_degrees):
 	return bullet_instance
 
 # Reduce the amount of ammo the weapon currently has when called
-func reduce_ammo():
+func _reduce_ammo():
 	ammo_amount -= 1
-	emit_signal("ammo_amount_changed", ammo_amount, max_ammo)
+	update_ammo()

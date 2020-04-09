@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://character/player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://helpers/state-label-world.gd" type="Script" id=2]
 [ext_resource path="res://character/debug_characters/Dummy.tscn" type="PackedScene" id=3]
 [ext_resource path="res://helpers/weapon_label.gd" type="Script" id=4]
+[ext_resource path="res://helpers/ammo-label.gd" type="Script" id=5]
 
 [node name="Debug_World" type="Node2D"]
 
@@ -54,6 +55,18 @@ margin_bottom = 102.0
 text = "WEAPON"
 align = 1
 script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AmmoLabel" type="Label" parent="Interface"]
+margin_left = 16.0
+margin_top = 104.0
+margin_right = 56.0
+margin_bottom = 118.0
+text = "10/10"
+align = 1
+script = ExtResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
