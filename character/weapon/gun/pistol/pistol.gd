@@ -5,4 +5,5 @@ func _ready() -> void:
 	weapon_name = "Pistol"
 	ammo_amount = max_ammo
 	fire_rate = 0.5
+	damage = 2
 	

@@ -11,6 +11,9 @@ func _ready():
 	timer.connect("timeout", self, "_remove_bullet")
 	timer.start()
 
+func set_damage(amount):
+	damage = amount
+
 func _on_Bullet_body_entered(body):
 	if !body.is_in_group("character"):
 		_remove_bullet()
