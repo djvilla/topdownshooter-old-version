@@ -206,11 +206,12 @@ func fire_gun():
 		weapon_current.use_weapon(self, can_melee, bullet_spawn)
 
 func melee_attack():
-	if Input.is_action_just_pressed("melee"):
+	if Input.is_action_just_pressed("melee") && !$AnimationPlayer.is_playing():
 		# Disable fireing while meleeing
 		can_melee = false
 		$AnimationPlayer.play("melee")
 
+# Switches weapon to the choosen weapon if it isn't current equipped
 func switch_weapon():
 	if Input.is_action_just_pressed("weapon1")&& weapon_current != equipped_weapon[Gun_Slots.PRIMARY]:
 		weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
@@ -219,8 +220,10 @@ func switch_weapon():
 	emit_signal("weapon_change", weapon_current)
 	weapon_current.update_ammo()
 
+# If the player has a weapon that can reload, disable the fire, play reload animation then reload it.
 func reload_weapon():
-	if Input.is_action_just_pressed("reload"):
+	if Input.is_action_just_pressed("reload") && weapon_current.can_reload() && !$AnimationPlayer.is_playing():
+		weapon_current.disable_fire()
 		$AnimationPlayer.play("reload")
 		
 
@@ -234,3 +237,4 @@ func _on_AnimationPlayer_animation_finished(anim_name):
 		can_melee = true
 	elif anim_name == "reload":
 		weapon_current.reload_gun()
+		weapon_current.enable_fire()
