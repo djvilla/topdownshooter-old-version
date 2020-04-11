@@ -1,6 +1,6 @@
 extends Node2D
 
-signal ammo_amount_changed(ammo_amount, max_ammo)
+signal ammo_amount_changed(ammo_amount, current_total_ammo)
 
 var weapon_name = ""
 
@@ -14,6 +14,8 @@ var can_fire = true #Helps to keep shots constant and not shooting all at once
 var damage = 1
 
 var max_ammo = 10
+var current_total_ammo = 10
+var clip_size = 5
 var ammo_amount
 
 func _ready():
@@ -42,9 +44,27 @@ func use_weapon(character, is_not_using_melee, bullet_spawn):
 		yield(character.get_tree().create_timer(fire_rate), "timeout")
 		can_fire = true
 
+# Function to check if the character can reload this weapon
+func can_reload():
+	if current_total_ammo == 0:
+		return false
+	else:
+		return true
+
+# Function to reload the gun if the current amount does not equal zero
+func reload_gun():
+	if can_reload():
+		var ammo_needed = clip_size - ammo_amount
+		if ammo_needed < current_total_ammo:
+			ammo_amount += ammo_needed
+			current_total_ammo -= ammo_needed
+		else:
+			ammo_amount += current_total_ammo
+			current_total_ammo -= current_total_ammo
+
 # Update the signal when weapons are switched. For Label
 func update_ammo():
-	emit_signal("ammo_amount_changed", ammo_amount, max_ammo)
+	emit_signal("ammo_amount_changed", ammo_amount, current_total_ammo)
 
 # This function creates an instance of a bullet on the given bullet spawn.
 # matches the characters direction
