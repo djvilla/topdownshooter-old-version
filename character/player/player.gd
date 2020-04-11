@@ -134,6 +134,7 @@ func _physics_process(delta):
 	fire_gun()
 	melee_attack()
 	switch_weapon()
+	reload_weapon()
 
 # Gets the input of the player
 static func get_raw_input(state):
@@ -218,6 +219,11 @@ func switch_weapon():
 	emit_signal("weapon_change", weapon_current)
 	weapon_current.update_ammo()
 
+func reload_weapon():
+	if Input.is_action_just_pressed("reload"):
+		$AnimationPlayer.play("reload")
+		
+
 func _on_MeleeHit_body_entered(body):
 	if body.is_in_group(attack_group):
 		body.take_damage(self, melee_damage)
@@ -226,3 +232,5 @@ func _on_MeleeHit_body_entered(body):
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if anim_name == "melee":
 		can_melee = true
+	elif anim_name == "reload":
+		weapon_current.reload_gun()
