@@ -17,13 +17,15 @@ var max_ammo = 10
 var current_total_ammo = 10
 var clip_size = 5
 var ammo_amount
+var is_reloading = false
 
 func _ready():
 	get_tree().get_root().get_node("Debug_World/Interface/AmmoLabel").setup(self)
 
-# Allows the character to fire the weapon when they can fire and when they are not meleeing
+# Allows the character to fire the weapon when they can fire, when they are not meleeing
+# and they are not currently reloading
 func use_weapon(character, is_not_using_melee, bullet_spawn):
-	if can_fire && is_not_using_melee:
+	if can_fire && is_not_using_melee && !is_reloading:
 		if ammo_amount > 0:
 			var bullet_instance = _create_bullet_instance(bullet_spawn, character.rotation, character.rotation_degrees)
 			# Using properties above, spawn bullet
@@ -44,7 +46,18 @@ func use_weapon(character, is_not_using_melee, bullet_spawn):
 		yield(character.get_tree().create_timer(fire_rate), "timeout")
 		can_fire = true
 
-# Function to check if the character can reload this weapon
+# Function handles enabling fire for this weapon
+# Was created to stop the weapon from firing during reloading
+func enable_fire():
+	is_reloading = false
+
+# Function handles disabling fire for this weapon.
+# Was created to stop the weapon from firing during reloading
+func disable_fire():
+	is_reloading = true
+
+# Function to check if the character can reload this weapon.
+# Can only reload when not firing weapon and not in the middle of reloading
 func can_reload():
 	if current_total_ammo == 0:
 		return false
