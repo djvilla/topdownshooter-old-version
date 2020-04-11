@@ -11,6 +11,7 @@ var bullet = preload("res://character/bullet/Bullet.tscn")
 var bullet_noise = load("res://sound/gun_revolver_pistol_shot_01.wav")
 var bullet_noise_empty= load("res://sound/gun_pistol_dry_fire_01.wav")
 var can_fire = true #Helps to keep shots constant and not shooting all at once
+var damage = 1
 
 var max_ammo = 10
 var ammo_amount
@@ -27,6 +28,7 @@ func use_weapon(character, is_not_using_melee, bullet_spawn):
 			character.get_tree().get_root().add_child(bullet_instance)
 			# Animation here for smoke or flash
 			# Reduce ammunition
+			bullet_instance.set_damage(damage)
 			_reduce_ammo()
 			if bullet_sfx.stream != bullet_noise:
 				bullet_sfx.stream = bullet_noise
