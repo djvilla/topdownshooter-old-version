@@ -55,6 +55,7 @@ const AIM = {
 
 var weapon1
 var weapon2
+var can_swap = true
 
 # Maps the type of weapon the player is holding
 var equipped_weapon = {
@@ -207,28 +208,30 @@ func player_movement(delta, input):
 # in the set direction.
 func fire_gun(input):
 	#Check if player is pressing the fire key, and if they can aim
-	if input.is_firing and AIM[state]:
+	if input.is_firing && AIM[state]:
 		weapon_current.use_weapon(self, can_melee, bullet_spawn)
 
 func melee_attack(input):
-	if input.is_using_melee && !$AnimationPlayer.is_playing():
+	if input.is_using_melee && !$AnimationPlayer.is_playing() && AIM[state]:
 		# Disable fireing while meleeing
 		can_melee = false
 		$AnimationPlayer.play("melee")
 
 # Switches weapon to the choosen weapon if it isn't current equipped
 func switch_weapon(input):
-	if input.is_swapping_weapon1 && weapon_current != equipped_weapon[Gun_Slots.PRIMARY]:
-		weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
-	elif input.is_swapping_weapon2 && weapon_current != equipped_weapon[Gun_Slots.SECONDARY]:
-		weapon_current = equipped_weapon[Gun_Slots.SECONDARY]
-	emit_signal("weapon_change", weapon_current)
-	weapon_current.update_ammo()
+	if AIM[state] && can_swap:
+		if input.is_swapping_weapon1 && weapon_current != equipped_weapon[Gun_Slots.PRIMARY]:
+			weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
+		elif input.is_swapping_weapon2 && weapon_current != equipped_weapon[Gun_Slots.SECONDARY]:
+			weapon_current = equipped_weapon[Gun_Slots.SECONDARY]
+		emit_signal("weapon_change", weapon_current)
+		weapon_current.update_ammo()
 
 # If the player has a weapon that can reload, disable the fire, play reload animation then reload it.
 func reload_weapon(input):
-	if input.is_reloading && weapon_current.can_reload() && !$AnimationPlayer.is_playing():
+	if input.is_reloading && weapon_current.can_reload() && !$AnimationPlayer.is_playing() && AIM[state]:
 		weapon_current.disable_fire()
+		can_swap = false
 		$AnimationPlayer.play("reload")
 		
 
@@ -242,4 +245,5 @@ func _on_AnimationPlayer_animation_finished(anim_name):
 		can_melee = true
 	elif anim_name == "reload":
 		weapon_current.reload_gun()
+		can_swap = true
 		weapon_current.enable_fire()
