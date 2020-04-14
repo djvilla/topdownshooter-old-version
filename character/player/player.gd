@@ -131,10 +131,10 @@ func _physics_process(delta):
 	#Apply movement for given state
 	player_movement(delta, input)
 	
-	fire_gun()
-	melee_attack()
-	switch_weapon()
-	reload_weapon()
+	fire_gun(input)
+	melee_attack(input)
+	switch_weapon(input)
+	reload_weapon(input)
 
 # Gets the input of the player
 static func get_raw_input(state):
@@ -143,7 +143,12 @@ static func get_raw_input(state):
 		is_running = Input.is_action_pressed("run"),
 		is_sneaking = Input.is_action_pressed("sneak"),
 		is_looting = Input.is_action_just_pressed("loot"),
-		is_done = Input.is_action_just_pressed("debug_done")
+		is_done = Input.is_action_just_pressed("debug_done"),
+		is_firing = Input.is_action_pressed("fire"),
+		is_using_melee = Input.is_action_just_pressed("melee"),
+		is_swapping_weapon1 = Input.is_action_just_pressed("weapon1"),
+		is_swapping_weapon2 = Input.is_action_just_pressed("weapon2"),
+		is_reloading = Input.is_action_just_pressed("reload")
 	}
 
 #Gets an event out from the given input
@@ -200,29 +205,29 @@ func player_movement(delta, input):
 # Function to create a new bullet instance, spawn it at the set bullet spawn,
 # match it's rotation to the users rotation, and then give it a foward velocity
 # in the set direction.
-func fire_gun():
+func fire_gun(input):
 	#Check if player is pressing the fire key, and if they can aim
-	if Input.is_action_pressed("fire") and AIM[state]:
+	if input.is_firing and AIM[state]:
 		weapon_current.use_weapon(self, can_melee, bullet_spawn)
 
-func melee_attack():
-	if Input.is_action_just_pressed("melee") && !$AnimationPlayer.is_playing():
+func melee_attack(input):
+	if input.is_using_melee && !$AnimationPlayer.is_playing():
 		# Disable fireing while meleeing
 		can_melee = false
 		$AnimationPlayer.play("melee")
 
 # Switches weapon to the choosen weapon if it isn't current equipped
-func switch_weapon():
-	if Input.is_action_just_pressed("weapon1")&& weapon_current != equipped_weapon[Gun_Slots.PRIMARY]:
+func switch_weapon(input):
+	if input.is_swapping_weapon1 && weapon_current != equipped_weapon[Gun_Slots.PRIMARY]:
 		weapon_current = equipped_weapon[Gun_Slots.PRIMARY]
-	elif Input.is_action_just_pressed("weapon2") && weapon_current != equipped_weapon[Gun_Slots.SECONDARY]:
+	elif input.is_swapping_weapon2 && weapon_current != equipped_weapon[Gun_Slots.SECONDARY]:
 		weapon_current = equipped_weapon[Gun_Slots.SECONDARY]
 	emit_signal("weapon_change", weapon_current)
 	weapon_current.update_ammo()
 
 # If the player has a weapon that can reload, disable the fire, play reload animation then reload it.
-func reload_weapon():
-	if Input.is_action_just_pressed("reload") && weapon_current.can_reload() && !$AnimationPlayer.is_playing():
+func reload_weapon(input):
+	if input.is_reloading && weapon_current.can_reload() && !$AnimationPlayer.is_playing():
 		weapon_current.disable_fire()
 		$AnimationPlayer.play("reload")
 		
