@@ -1,4 +1,4 @@
-### Top Down Shooter *OLD VERSION*
+### Top Down Shooter *OLD VERSION* :older_woman:
 
 A top down shooter frame work made in Godot. The game has one player and one enemy for the player to shoot and defeat. This code base is considered outdated
 and not really good for copying if you want to create your own top down shooter. *HOWEVER*, it does have a pretty interesting system for easily creating new
@@ -6,7 +6,7 @@ gun types. While this system is partially in the refactor code, I still use this
 
 I would not recommend copying this out right, but just looking at it as a very terrible reference.
 
-## How to Run
+## How to Run :running:
 This project only works on Godot 3.1.2.stable. Any newer version seems to crash due to a way I handle a static method.
 
 1. Open up the project in Godot
@@ -29,3 +29,7 @@ D - Move Right
 Use the mouse to aim around the screen. Press the Left mouse button to Fire.
 
 Press *F8* to exit the game.
+
+## Credits :bookmark_tabs:
+Inital insperation for this was based off a small tutorial from [Miziziziz](https://www.youtube.com/watch?v=5vYI_mgERBU). Player and enemy images were provided
+by that tutorial as well.
