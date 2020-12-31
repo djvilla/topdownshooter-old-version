@@ -20,10 +20,15 @@ The sound of the shooting is very loud. If you are wearing headphones, please tu
 
 ## Controls :video_game:
 W - Move Up
+
 A - Move Left
+
 S - Move Down
+
 D - Move Right
+
 1 - Switch to Machine Gun
+
 2 - Switch to Pistol
 
 Use the mouse to aim around the screen. Press the Left mouse button to Fire.
