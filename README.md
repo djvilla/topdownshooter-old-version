@@ -15,7 +15,7 @@ This project only works on Godot 3.1.2.stable. Any newer version seems to crash 
 
 Congrats! You are now playing the game!
 
-# WARNING :loudspeaker:
+## WARNING :loudspeaker:
 The sound of the shooting is very loud. If you are wearing headphones, please turn the volume down!
 
 ## Controls :video_game:
